@@ -1,3 +1,4 @@
+#define __STDC_WANT_LIB_EXT2__ 1
 #include "expr_string.h"
 #include <string.h>
 #include <stdio.h>
@@ -6,41 +7,32 @@
 #define BUF_SIZE 2048
 static char buf[BUF_SIZE];
 
-String makeStrCpy(String str) {
-    //allocates memory for a copy of contents of the buffer
-    String str_cpy = (String)malloc((strlen(str) + 1) * sizeof(char));
-    if (str_cpy != NULL) {
-        strcpy(str_cpy, str);
-    }
-    return str_cpy;
-}
-
 String readString(void) {
     //reads a string from stdin
     //allocates memory for a string
-    gets(buf);
-    return makeStrCpy(buf);
+    fgets(buf, BUF_SIZE, stdin);
+    return strdup(buf);
 }
 
 String removeSpaces(String str) {
     //removes all spaces in the string;
     //allocates memory for a new one
-    buf[0] = '\0'; //empty the buffer
-    String str_copy = makeStrCpy(str);
-    String word = strtok(str_copy, " \t");
-    while (word != NULL) {
-        strcat(buf, word);
-        word = strtok(NULL, " \t");
+    static char charset[] = " \t\n";
+    int len = 0;
+    for (; *str; ++str) {
+        if (strchr(charset, *str) == NULL) {
+            buf[len++] = *str;
+        }
     }
-    destroyString(str_copy);
-    return makeStrCpy(buf);
+    buf[len] = '\0';
+    return strdup(buf);
 }
 
 int isExpr(String expr) {
     //checks whether the expression contains invalid characters or not
     //(which are not in the charset below)
-    static char charset[] = "0123456789+-*/(). \t";
-    while (*expr != '\0') {
+    static char charset[] = "0123456789+-*/().";
+    while (*expr) {
         if (strchr(charset, *expr++) == NULL) {
             return 0;
         }
