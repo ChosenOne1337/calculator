@@ -4,17 +4,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-List *getRPN(List *tokenList, int *ERROR_BITS) {
-    if (*ERROR_BITS) {
+void setError(Error *ptrError, ErrorType errorType) {
+    if (ptrError) {
+        ptrError->isError = 1;
+        ptrError->msg = errMsg[errorType];
+    }
+}
+
+List *getRPN(List *tokenList, Error *ptrError) {
+    if (ptrError->isError) {
         return NULL;
     }
     Stack *tokenStack = createStack();
     List *RPN_expr = NULL;
     List *curToken = tokenList;
-    while (curToken != NULL && !*ERROR_BITS) {
+    while (curToken != NULL && !ptrError->isError) {
         switch (curToken->data.tokenType) {
             case NotToken:
-                *ERROR_BITS |= InvalidExprError;
+                setError(ptrError, InvalidExprError);
                 break;
 
             case NumberToken:
@@ -30,7 +37,7 @@ List *getRPN(List *tokenList, int *ERROR_BITS) {
                     RPN_expr = append(RPN_expr, pop(tokenStack));
                 }
                 if (empty(tokenStack)) {
-                    *ERROR_BITS |= ParenthesesDisbalance;
+                    setError(ptrError, ParenthesesDisbalance);
                 }
                 else {
                     pop(tokenStack);
@@ -50,7 +57,7 @@ List *getRPN(List *tokenList, int *ERROR_BITS) {
     }
     while (!empty(tokenStack)) {
         if (top(tokenStack).tokenType == LeftBracketToken) {
-            *ERROR_BITS |= ParenthesesDisbalance;
+            setError(ptrError, ParenthesesDisbalance);
             break;
         }
         RPN_expr = append(RPN_expr, pop(tokenStack));
@@ -59,26 +66,26 @@ List *getRPN(List *tokenList, int *ERROR_BITS) {
     return RPN_expr;
 }
 
-double calculateRPN(List *RPN_expr, int *ERROR_BITS) {
-    if (*ERROR_BITS) {
+double calculateRPN(List *RPN_expr, Error *ptrError) {
+    if (ptrError->isError) {
         return 0.0;
     }
     Stack *tokenStack = createStack();
     List *curToken = RPN_expr;
     double val, op1, op2;
     val = op1 = op2 = 0.0;
-    while (curToken != NULL && !*ERROR_BITS) {
+    while (curToken != NULL && !ptrError->isError) {
         if (curToken->data.tokenType == NumberToken) {
             push(tokenStack, curToken->data);
         }
         else {
             if (empty(tokenStack)) {
-                *ERROR_BITS |= InvalidExprError;
+                setError(ptrError, InvalidExprError);
                 break;
             }
             op1 = pop(tokenStack).val;
             if (empty(tokenStack)) {
-                *ERROR_BITS |= InvalidExprError;
+                setError(ptrError, InvalidExprError);
                 break;
             }
             op2 = pop(tokenStack).val;
@@ -94,13 +101,13 @@ double calculateRPN(List *RPN_expr, int *ERROR_BITS) {
                     break;
                 case DivOperToken:
                     if (op1 == 0.0) {
-                        *ERROR_BITS |= DivZeroError;
+                        setError(ptrError, DivZeroError);
                         break;
                     }
                     val = op2 / op1;
                     break;
                 default:
-                    *ERROR_BITS |= InvalidExprError;
+                    setError(ptrError, InvalidExprError);
                     break;
             }
             push(tokenStack, makeToken(NumberToken, val));
@@ -108,40 +115,40 @@ double calculateRPN(List *RPN_expr, int *ERROR_BITS) {
         curToken = curToken->pNext;
     }
     if (empty(tokenStack) || tokenStack->size > 1) {
-        *ERROR_BITS |= InvalidExprError;
+        setError(ptrError, InvalidExprError);
     }
     else {
         val = pop(tokenStack).val;
     }
     destroyStack(tokenStack);
-    return (*ERROR_BITS) ? 0.0 : val;
+    return (ptrError->isError) ? 0.0 : val;
 }
 
-double calculate(String expr, int *ERROR_BITS) {
+double calculate(String expr, Error *ptrError) {
     double val = 0.0;
-    *ERROR_BITS = 0;
+    ptrError->isError = 0;
     if (expr == NULL) {
-        *ERROR_BITS |= MallocError;
+        setError(ptrError, MallocError);
         return 0.0;
     }
     String expr_glued = removeSpaces(expr);
     if (expr_glued == NULL) {
-        *ERROR_BITS |= MallocError;
+        setError(ptrError, MallocError);
         return 0.0;
     }
     if (!isExpr(expr_glued)) {
-        *ERROR_BITS |= InvalidExprError;
+        setError(ptrError, InvalidExprError);
     }
     else {
         List *tokenList = makeTokenList(expr_glued);
         if (tokenList == NULL) {
-            *ERROR_BITS |= InvalidExprError;
+            setError(ptrError, InvalidExprError);
         }
-        List *RPN_expr = getRPN(tokenList, ERROR_BITS);
+        List *RPN_expr = getRPN(tokenList, ptrError);
         printf("RPN: ");
         printTokenList(RPN_expr);
         printf("\n");
-        val = calculateRPN(RPN_expr, ERROR_BITS);
+        val = calculateRPN(RPN_expr, ptrError);
         destroyList(tokenList);
         destroyList(RPN_expr);
     }

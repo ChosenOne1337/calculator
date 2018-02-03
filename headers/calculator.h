@@ -3,13 +3,23 @@
 
 #include "expr_string.h"
 
-typedef enum ErrorTypes {
-    InvalidExprError = 1,
-    ParenthesesDisbalance = 2,
-    DivZeroError = 4,
-    MallocError = 8,
-} ErrorTypes;
+typedef enum ErrorType {
+    InvalidExprError ,
+    ParenthesesDisbalance,
+    DivZeroError,
+    MallocError
+} ErrorType;
 
-double calculate(String expr, int *ERROR_BITS);
+typedef struct Error {
+    int isError;
+    String msg;
+} Error;
+
+static const String errMsg[] = {    "Error: Invalid expression!",
+                                    "Error: Parentheses disbalance!",
+                                    "Error: Division by zero!",
+                                    "Error: Memory allocation failure!"};
+
+double calculate(String expr, Error *ptrError);
 
 #endif // CALCULATOR_H
