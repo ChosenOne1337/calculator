@@ -27,11 +27,13 @@ typedef struct List {
     struct List *pNext;
 } List;
 
+List *tail(List *pHead);
 List *prepend(List *pHead, Token data);
 List *append(List *pHead, Token data);
 List *insert_after(List *pPrev, Token data);
 List *erase_after(List *pPrev);
 List *erase_head(List *pHead);
+List *erase_tail(List *pHead);
 void destroyList(List *pHead);
 
         /// Stack ///

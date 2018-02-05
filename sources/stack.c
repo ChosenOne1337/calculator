@@ -3,35 +3,42 @@
 
         /// List ///
 
+List *tail(List *pHead) {
+    if (pHead == NULL) {
+        return NULL;
+    }
+    while (pHead->pNext != NULL) {
+        pHead = pHead->pNext;
+    }
+    return pHead;
+}
+
 List *prepend(List *pHead, Token data) {
     //if succeeds, returns pointer to the new head,
     //else - pointer to the old one
     List *pNew = (List*)malloc(sizeof(List));
-    if (pNew != NULL) {
-        pNew->data = data;
-        pNew->pNext = pHead;
-        return pNew;
+    if (pNew == NULL) {
+        return pHead;
     }
-    return pHead;
+    pNew->data = data;
+    pNew->pNext = pHead;
+    return pNew;
 }
 
 List *append(List *pHead, Token data) {
     //if pHead == NULL, returns pointer to the new head
     //else - pointer to the old one
     List *pNew = (List*)malloc(sizeof(List));
-    if (pNew != NULL) {
-        pNew->data = data;
-        pNew->pNext = NULL;
-        if (pHead != NULL) {
-            List *pCur = pHead;
-            while (pCur->pNext != NULL) {
-                pCur = pCur->pNext;
-            }
-            pCur->pNext = pNew;
-        }
-        else return pNew;
+    if (pNew == NULL) {
+        return pHead;
     }
-    return pHead;
+    pNew->data = data;
+    pNew->pNext = NULL;
+    if (pHead != NULL) {
+        tail(pHead)->pNext = pNew;
+        return pHead;
+    }
+    return pNew;
 }
 
 List *insert_after(List *pPrev, Token data) {
@@ -39,18 +46,18 @@ List *insert_after(List *pPrev, Token data) {
     //or pPrev if nothing has been added
     //if pPrev == NULL, function creates an element anyway
     List *pNew = (List*)malloc(sizeof(List));
-    if (pNew != NULL) {
-        pNew->data = data;
-        if (pPrev != NULL) {
-            pNew->pNext = pPrev->pNext;
-            pPrev->pNext = pNew;
-        }
-        else {
-            pNew->pNext = NULL;
-        }
-        return pNew;
+    if (pNew == NULL) {
+        return pPrev;
     }
-    return pPrev;
+    pNew->data = data;
+    if (pPrev != NULL) {
+        pNew->pNext = pPrev->pNext;
+        pPrev->pNext = pNew;
+    }
+    else {
+        pNew->pNext = NULL;
+    }
+    return pNew;
 }
 
 List *erase_after(List *pPrev) {
@@ -74,26 +81,16 @@ List *erase_head(List *pHead) {
 }
 
 List *erase_tail(List *pHead) {
-    List *pCur = pHead, *pPrev = NULL;
-    if (pHead != NULL) {
-        while (pCur->pNext != NULL) {
-            pPrev = pCur;
-            pCur = pCur->pNext;
-        }
-        if (pPrev != NULL) {
-            pPrev->pNext = NULL;
-        }
-        free(pCur);
+    List *pTail= tail(pHead);
+    if (pTail != NULL) {
+        free(pTail);
     }
-    return pPrev;
+    return pHead;
 }
 
 void destroyList(List *pHead) {
-    List *pCur;
-    while (pHead != NULL) {
-        pCur = pHead;
-        pHead = pHead->pNext;
-        free(pCur);
+    while (pHead) {
+        pHead = erase_head(pHead);
     }
 }
 
