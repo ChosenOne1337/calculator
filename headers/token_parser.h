@@ -2,7 +2,6 @@
 #define TOKEN_PARSER_H
 
 typedef struct List List;
-typedef char *String;
 
 typedef enum TokenType {
     NotToken,
@@ -24,7 +23,7 @@ typedef struct Token {
 } Token;
 
 Token makeToken(TokenType tokenType, double num);
-List *makeTokenList(String expr);
+List *makeTokenList(char *expr);
 void printTokenList(List *tokenList);
 
 #endif // TOKEN_PARSER_H

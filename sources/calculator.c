@@ -124,14 +124,14 @@ double calculateRPN(List *RPN_expr, Error *ptrError) {
     return (ptrError->isError) ? 0.0 : val;
 }
 
-double calculate(String expr, Error *ptrError) {
+double calculate(const char *expr, Error *ptrError) {
     double val = 0.0;
     ptrError->isError = 0;
     if (expr == NULL) {
         setError(ptrError, MallocError);
         return 0.0;
     }
-    String expr_glued = removeSpaces(expr);
+    char *expr_glued = removeSpaces(expr);
     if (expr_glued == NULL) {
         setError(ptrError, MallocError);
         return 0.0;
@@ -145,9 +145,6 @@ double calculate(String expr, Error *ptrError) {
             setError(ptrError, InvalidExprError);
         }
         List *RPN_expr = getRPN(tokenList, ptrError);
-        printf("RPN: ");
-        printTokenList(RPN_expr);
-        printf("\n");
         val = calculateRPN(RPN_expr, ptrError);
         destroyList(tokenList);
         destroyList(RPN_expr);

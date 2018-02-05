@@ -14,7 +14,7 @@ Token makeToken(TokenType tokenType, double num) {
     return token;
 }
 
-List *makeTokenList(String expr) {
+List *makeTokenList(char *expr) {
     //a valid expression without white spaces is expected
     List *tokenList = NULL;
     TokenType tokenType = NotToken;

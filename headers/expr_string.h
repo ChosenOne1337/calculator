@@ -1,11 +1,11 @@
 #ifndef EXPR_STRING_H
 #define EXPR_STRING_H
 
-typedef char *String;
+#include <stdio.h>
 
-String readString(void);
-String removeSpaces(String str);
-void destroyString(String str);
-int isExpr(String expr);
+char *readString(FILE *pFile);
+char *removeSpaces(const char *str);
+void destroyString(char *str);
+int isExpr(const char *expr);
 
 #endif // EXPR_STRING_H

@@ -12,14 +12,14 @@ typedef enum ErrorType {
 
 typedef struct Error {
     int isError;
-    String msg;
+    const char *msg;
 } Error;
 
-static const String errMsg[] = {    "Error: Invalid expression!",
+static const char *errMsg[] = {    "Error: Invalid expression!",
                                     "Error: Parentheses disbalance!",
                                     "Error: Division by zero!",
                                     "Error: Memory allocation failure!"};
 
-double calculate(String expr, Error *ptrError);
+double calculate(const char *expr, Error *ptrError);
 
 #endif // CALCULATOR_H

@@ -3,6 +3,23 @@
 
 #include "token_parser.h"
 
+//typedef enum ItemType {
+//    CHAR,
+//    INT,
+//    DOUBLE,
+//    TOKEN
+//} ItemType;
+
+//typedef struct Item {
+//    ItemType tag;
+//    typedef union ItemUnion {
+//        char char_val;
+//        int int_val;
+//        double double_val;
+//        Token token_val;
+//    } ItemUnion;
+//} Item;
+
         /// List ///
 
 typedef struct List {
