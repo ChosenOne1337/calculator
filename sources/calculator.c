@@ -121,31 +121,21 @@ double calculate_rpn(List *rpnExpr, Error *ptrError) {
     return (ptrError->isError) ? 0.0 : val;
 }
 
-double calculate(const char *expr, Error *ptrError) {
+double calculate(char *expr, Error *ptrError) {
+    //an expression without white spaces is expected
     double val = 0.0;
     ptrError->isError = 0;
     if (expr == NULL) {
         setError(ptrError, MallocError);
         return 0.0;
     }
-    char *expr_glued = removeSpaces(expr);
-    if (expr_glued == NULL) {
-        setError(ptrError, MallocError);
-        return 0.0;
-    }
-    if (!isExpr(expr_glued)) {
+    List *tokenList = makeTokenList(expr);
+    if (tokenList == NULL) {
         setError(ptrError, InvalidExprError);
     }
-    else {
-        List *tokenList = makeTokenList(expr_glued);
-        if (tokenList == NULL) {
-            setError(ptrError, InvalidExprError);
-        }
-        List *rpnExpr = get_rpn(tokenList, ptrError);
-        val = calculate_rpn(rpnExpr, ptrError);
-        destroyList(tokenList);
-        destroyList(rpnExpr);
-    }
-    destroyString(expr_glued);
+    List *rpnExpr = get_rpn(tokenList, ptrError);
+    val = calculate_rpn(rpnExpr, ptrError);
+    destroyList(tokenList);
+    destroyList(rpnExpr);
     return val;
 }

@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 char *readString(FILE *pFile);
-char *removeSpaces(const char *str);
+char *removeSpaces(char *str);
 void destroyString(char *str);
 int isExpr(const char *expr);
 

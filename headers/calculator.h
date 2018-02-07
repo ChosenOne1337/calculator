@@ -15,6 +15,6 @@ typedef struct Error {
     const char *msg;
 } Error;
 
-double calculate(const char *expr, Error *ptrError);
+double calculate(char *expr, Error *ptrError);
 
 #endif // CALCULATOR_H

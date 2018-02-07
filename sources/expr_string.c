@@ -13,18 +13,21 @@ char *readString(FILE *pFile) {
     return strdup(buf);
 }
 
-char *removeSpaces(const char *str) {
+char *removeSpaces(char *str) {
     //removes all spaces in the string;
-    //allocates memory for a new one
+    if (str == NULL) {
+        return NULL;
+    }
     static char charset[] = " \t\n";
     int len = 0;
+    char *str_glued = str;
     for (; *str; ++str) {
         if (strchr(charset, *str) == NULL) {
-            buf[len++] = *str;
+            str_glued[len++] = *str;
         }
     }
-    buf[len] = '\0';
-    return strdup(buf);
+    str_glued[len] = '\0';
+    return str_glued;
 }
 
 int isExpr(const char *expr) {
