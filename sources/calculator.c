@@ -94,22 +94,22 @@ double calculate_rpn(List *rpnExpr, Error *ptrError) {
     double val, op1, op2;
     val = op1 = op2 = 0.0;
     for (; curToken != NULL && !ptrError->isError; curToken = curToken->pNext) {
-            if (curToken->data.tokenType == NumberToken) {
-                push(tokenStack, curToken->data);
-                continue;
-            }
-            if (empty(tokenStack)) {
-                setError(ptrError, InvalidExprError);
-                break;
-            }
-            op2 = pop(tokenStack).val;
-            if (empty(tokenStack)) {
-                setError(ptrError, InvalidExprError);
-                break;
-            }
-            op1 = pop(tokenStack).val;
-            val = applyOperator(op1, op2, curToken->data.tokenType, ptrError);
-            push(tokenStack, makeToken(NumberToken, val));
+        if (curToken->data.tokenType == NumberToken) {
+            push(tokenStack, curToken->data);
+            continue;
+        }
+        if (empty(tokenStack)) {
+            setError(ptrError, InvalidExprError);
+            break;
+        }
+        op2 = pop(tokenStack).val;
+        if (empty(tokenStack)) {
+            setError(ptrError, InvalidExprError);
+            break;
+        }
+        op1 = pop(tokenStack).val;
+        val = applyOperator(op1, op2, curToken->data.tokenType, ptrError);
+        push(tokenStack, makeToken(NumberToken, val));
     }
     if (empty(tokenStack) || tokenStack->size > 1) {
         setError(ptrError, InvalidExprError);

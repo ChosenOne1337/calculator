@@ -4,11 +4,9 @@
 #include <libgen.h>
 #include "calculator.h"
 
-void calc(FILE *pInput, FILE *pOutput) {
+void calc(const char *expr, FILE *pOutput) {
     Error error = {.isError = 0, .msg = NULL};
-    char *str = readString(pInput);
-    double val = calculate(str, &error);
-    destroyString(str);
+    double val = calculate(expr, &error);
     if (error.isError) {
         fprintf(stderr, "%s\n", error.msg);
         return;
@@ -17,12 +15,13 @@ void calc(FILE *pInput, FILE *pOutput) {
 }
 
 void calcFile(FILE *pInput, FILE *pOutput) {
-    if (pInput == stdin) {
-        calc(stdin, pOutput);
-        return;
-    }
+    char *expr = NULL;
     while (!feof(pInput)) {
-        calc(pInput, pOutput);
+        if ((expr = readString(pInput)) == NULL) {
+            continue;
+        }
+        calc(expr, pOutput);
+        destroyString(expr);
     }
 }
 
@@ -40,7 +39,7 @@ void printUsage(char *appPath) {
     char *appName = basename(appPath);
     printf("Usage:\n"
            "%s: read expression from the standard input,\n"
-           "%s [-f] f1 f2: read expressions from the f1, put results to the f2\n",
+           "%s [-f] file1 file2: read from the file1, write to the file2\n",
            appName, appName);
 }
 
@@ -69,6 +68,7 @@ int main(int argc, char *argv[]) {
         FILE *pOutput = fopen(argv[3], "w");
         if (pOutput == NULL) {
             fprintf(stderr, "Error: Failed to open %s!", argv[3]);
+            fclose(pInput);
             return 1;
         }
         calcFile(pInput, pOutput);
