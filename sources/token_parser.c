@@ -7,10 +7,7 @@
         /// Tokens ///
 
 Token makeToken(TokenType tokenType, double num) {
-    //something kind of class constructor...
-    Token token;
-    token.tokenType = tokenType;
-    token.val = num;
+    Token token = {.val = num, .tokenType = tokenType};
     return token;
 }
 
@@ -19,39 +16,37 @@ List *makeTokenList(char *expr) {
     List *tokenList = NULL;
     TokenType tokenType = NotToken;
     double val = 0.0;
-    while (*expr != '\0') {
+    for (; *expr; tokenList = append(tokenList, makeToken(tokenType, val))) {
         if (isdigit(*expr)) {
             val = strtod(expr, &expr);
             tokenType = NumberToken;
+            continue;
         }
-        else  {
-            val = 0.0;
-            switch (*expr++) {
-            case '+':
-                tokenType = PlusOperToken;
-                break;
-            case '-':
-                tokenType = MinusOperToken;
-                break;
-            case '*':
-                tokenType = MultOperToken;
-                break;
-            case '/':
-                tokenType = DivOperToken;
-                break;
-            case '(':
-                tokenType = LeftBracketToken;
-                break;
-            case ')':
-                tokenType = RightBracketToken;
-                break;
-            default:
-                //invalid token
-                tokenType = NotToken;
-                break;
-            }
+        val = 0.0;
+        switch (*expr++) {
+        case '+':
+            tokenType = PlusOperToken;
+            break;
+        case '-':
+            tokenType = MinusOperToken;
+            break;
+        case '*':
+            tokenType = MultOperToken;
+            break;
+        case '/':
+            tokenType = DivOperToken;
+            break;
+        case '(':
+            tokenType = LeftBracketToken;
+            break;
+        case ')':
+            tokenType = RightBracketToken;
+            break;
+        default:
+            //invalid token
+            tokenType = NotToken;
+            break;
         }
-        tokenList = append(tokenList, makeToken(tokenType, val));
     }
     return tokenList;
 }

@@ -15,11 +15,6 @@ typedef struct Error {
     const char *msg;
 } Error;
 
-static const char *errMsg[] = {    "Error: Invalid expression!",
-                                    "Error: Parentheses disbalance!",
-                                    "Error: Division by zero!",
-                                    "Error: Memory allocation failure!"};
-
 double calculate(const char *expr, Error *ptrError);
 
 #endif // CALCULATOR_H

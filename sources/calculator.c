@@ -4,6 +4,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+static const char *errMsg[] = {    "Error: Invalid expression!",
+                                    "Error: Parentheses disbalance!",
+                                    "Error: Division by zero!",
+                                    "Error: Memory allocation failure!"};
+
 void setError(Error *ptrError, ErrorType errorType) {
     if (ptrError) {
         ptrError->isError = 1;
