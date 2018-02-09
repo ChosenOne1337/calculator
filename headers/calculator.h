@@ -2,19 +2,9 @@
 #define CALCULATOR_H
 
 #include "expr_string.h"
+#include "identifiers.h"
+#include "error.h"
 
-typedef enum ErrorType {
-    InvalidExprError ,
-    ParenthesesDisbalance,
-    DivZeroError,
-    MallocError
-} ErrorType;
-
-typedef struct Error {
-    int isError;
-    const char *msg;
-} Error;
-
-double calculate(char *expr, Error *ptrError);
+double calculate(char *expr);
 
 #endif // CALCULATOR_H

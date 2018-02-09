@@ -4,15 +4,30 @@
 #include <libgen.h>
 #include "calculator.h"
 
+int EXIT_FLAG = 0;
+
+int command_handler(char *expr);
+
 void calc(char *expr, FILE *pOutput) {
-    Error error = {.isError = 0, .msg = NULL};
-    expr = removeSpaces(expr);
-    if (expr[0] == '\0') {
+    reset_error();
+    expr = remove_spaces(expr);
+    if (is_empty(expr)) {
         return;
     }
-    double val = calculate(expr, &error);
-    if (error.isError) {
-        fprintf(stderr, "%s\n", error.msg);
+    if (command_handler(expr)) {
+        return;
+    }
+    if (is_var_declaration(expr)) {
+        if (is_error()) {
+            fprintf(stderr, "%s\n", get_error_msg());
+            return;
+        }
+        add_var(expr);
+        return;
+    }
+    double val = calculate(expr);
+    if (is_error()) {
+        fprintf(stderr, "%s\n", get_error_msg());
         return;
     }
     fprintf(pOutput, "%s = %.5lg\n", expr, val);
@@ -20,17 +35,16 @@ void calc(char *expr, FILE *pOutput) {
 
 void calcFile(FILE *pInput, FILE *pOutput) {
     char *expr = NULL;
-    while (!feof(pInput)) {
+    while (!feof(pInput) && !EXIT_FLAG) {
         if (pInput == stdin) {
             printf("\n>> ");
             fflush(stdout);
         }
-        if ((expr = readString(pInput)) == NULL) {
-            continue;
-        }
+        expr = read_string(pInput);
         calc(expr, pOutput);
-        destroyString(expr);
+        destroy_string(expr);
     }
+    destroy_var_list();
 }
 
 // command-line interface
@@ -54,8 +68,28 @@ void printUsage(char *appPath) {
            appName, appName, appName, appName);
 }
 
-void printInfo() {
-    printf("Calculator v1.0\n");
+void print_info() {
+    printf("Calculator v1.0\n"
+           "Command list:\n"
+           "*** help - show the help menu\n"
+           "*** varlist - print the list of defined variables\n"
+           "*** exit or ctrl + Z - close the program\n");
+}
+
+int command_handler(char *expr) {
+    if (!strcmp(expr, "help")) {
+        print_info();
+        return 1;
+    }
+    if (!strcmp(expr, "varlist")) {
+        print_var_list();
+        return 1;
+    }
+    if (!strcmp(expr, "exit")) {
+        EXIT_FLAG = 1;
+        return 1;
+    }
+    return 0;
 }
 
 int main(int argc, char *argv[]) {
@@ -71,7 +105,7 @@ int main(int argc, char *argv[]) {
     }
     if (!strcmp(argv[1], options[InfoOption])) {
         //usage information
-        printInfo();
+        print_info();
         return 0;
     }
     if (!strcmp(argv[1], options[FileOption])) {

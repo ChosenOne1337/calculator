@@ -3,9 +3,10 @@
 
 #include <stdio.h>
 
-char *readString(FILE *pFile);
-char *removeSpaces(char *str);
-void destroyString(char *str);
-int isExpr(const char *expr);
+char *read_string(FILE *pFile);
+char *remove_spaces(char *str);
+void destroy_string(char *str);
+int has_letters(const char *expr);
+int is_empty(const char *expr);
 
 #endif // EXPR_STRING_H

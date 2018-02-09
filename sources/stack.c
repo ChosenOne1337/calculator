@@ -88,7 +88,7 @@ List *erase_tail(List *pHead) {
     return pHead;
 }
 
-void destroyList(List *pHead) {
+void destroy_list(List *pHead) {
     while (pHead) {
         pHead = erase_head(pHead);
     }
@@ -96,7 +96,7 @@ void destroyList(List *pHead) {
 
         /// Stack ///
 
-Stack *createStack(void) {
+Stack *create_stack(void) {
     Stack *pStack = (Stack*)malloc(sizeof(Stack));
     if (pStack != NULL) {
         pStack->pTop = NULL;
@@ -105,9 +105,9 @@ Stack *createStack(void) {
     return pStack;
 }
 
-void destroyStack(Stack *pStack) {
+void destroy_stack(Stack *pStack) {
     if (pStack != NULL) {
-        destroyList(pStack->pTop);
+        destroy_list(pStack->pTop);
         free(pStack);
     }
 }

@@ -1,32 +1,21 @@
+#include <stdlib.h>
 #include "calculator.h"
 #include "token_parser.h"
-#include <stack.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include "identifiers.h"
+#include "error.h"
+#include "stack.h"
 
-static const char *errMsg[] = {    "Error: Invalid expression!",
-                                    "Error: Parentheses disbalance!",
-                                    "Error: Division by zero!",
-                                    "Error: Memory allocation failure!"};
-
-void setError(Error *ptrError, ErrorType errorType) {
-    if (ptrError) {
-        ptrError->isError = 1;
-        ptrError->msg = errMsg[errorType];
-    }
-}
-
-List *get_rpn(List *tokenList, Error *ptrError) {
-    if (ptrError->isError) {
+List *get_rpn(List *tokenList) {
+    if (is_error()) {
         return NULL;
     }
-    Stack *tokenStack = createStack();
+    Stack *tokenStack = create_stack();
     List *rpnExpr = NULL;
     List *curToken = tokenList;
-    for (; curToken != NULL && !ptrError->isError; curToken = curToken->pNext) {
+    for (; curToken != NULL && !is_error(); curToken = curToken->pNext) {
         switch (curToken->data.tokenType) {
             case NotToken:
-                setError(ptrError, InvalidExprError);
+                set_error(InvalidExprError);
                 break;
             case NumberToken:
                 rpnExpr = append(rpnExpr, curToken->data);
@@ -39,7 +28,7 @@ List *get_rpn(List *tokenList, Error *ptrError) {
                     rpnExpr = append(rpnExpr, pop(tokenStack));
                 }
                 if (empty(tokenStack)) {
-                    setError(ptrError, ParenthesesDisbalance);
+                    set_error(ParenthesesDisbalance);
                     break;
                 }
                 pop(tokenStack);
@@ -56,16 +45,16 @@ List *get_rpn(List *tokenList, Error *ptrError) {
     }
     while (!empty(tokenStack)) {
         if (top(tokenStack).tokenType == LeftBracketToken) {
-            setError(ptrError, ParenthesesDisbalance);
+            set_error(ParenthesesDisbalance);
             break;
         }
         rpnExpr = append(rpnExpr, pop(tokenStack));
     }
-    destroyStack(tokenStack);
+    destroy_stack(tokenStack);
     return rpnExpr;
 }
 
-double applyOperator(double op1, double op2, TokenType tokenType, Error *ptrError) {
+double apply_operator(double op1, double op2, TokenType tokenType) {
     switch (tokenType) {
         case PlusOperToken:
             return op1 + op2;
@@ -75,67 +64,66 @@ double applyOperator(double op1, double op2, TokenType tokenType, Error *ptrErro
             return op1 * op2;
         case DivOperToken:
             if (op2 == 0.0) {
-                setError(ptrError, DivZeroError);
+                set_error(DivZeroError);
                 return 0.0;
             }
             return op1 / op2;
         default:
-            setError(ptrError, InvalidExprError);
+            set_error(InvalidExprError);
             return 0.0;
     }
 }
 
-double calculate_rpn(List *rpnExpr, Error *ptrError) {
-    if (ptrError->isError) {
+double calculate_rpn(List *rpnExpr) {
+    if (is_error()) {
         return 0.0;
     }
-    Stack *tokenStack = createStack();
+    Stack *tokenStack = create_stack();
     List *curToken = rpnExpr;
     double val, op1, op2;
     val = op1 = op2 = 0.0;
-    for (; curToken != NULL && !ptrError->isError; curToken = curToken->pNext) {
+    for (; curToken != NULL && !is_error(); curToken = curToken->pNext) {
         if (curToken->data.tokenType == NumberToken) {
             push(tokenStack, curToken->data);
             continue;
         }
         if (empty(tokenStack)) {
-            setError(ptrError, InvalidExprError);
+            set_error(InvalidExprError);
             break;
         }
         op2 = pop(tokenStack).val;
         if (empty(tokenStack)) {
-            setError(ptrError, InvalidExprError);
+            set_error(InvalidExprError);
             break;
         }
         op1 = pop(tokenStack).val;
-        val = applyOperator(op1, op2, curToken->data.tokenType, ptrError);
-        push(tokenStack, makeToken(NumberToken, val));
+        val = apply_operator(op1, op2, curToken->data.tokenType);
+        push(tokenStack, make_token(NumberToken, val));
     }
     if (empty(tokenStack) || tokenStack->size > 1) {
-        setError(ptrError, InvalidExprError);
+        set_error(InvalidExprError);
     }
     else {
         val = pop(tokenStack).val;
     }
-    destroyStack(tokenStack);
-    return (ptrError->isError) ? 0.0 : val;
+    destroy_stack(tokenStack);
+    return (is_error()) ? 0.0 : val;
 }
 
-double calculate(char *expr, Error *ptrError) {
+double calculate(char *expr) {
     //an expression without white spaces is expected
-    double val = 0.0;
-    ptrError->isError = 0;
     if (expr == NULL) {
-        setError(ptrError, MallocError);
+        set_error(MallocError);
         return 0.0;
     }
-    List *tokenList = makeTokenList(expr);
-    if (tokenList == NULL) {
-        setError(ptrError, InvalidExprError);
+    List *tokenList = make_token_list(expr);
+    if (is_error()) {
+        destroy_list(tokenList);
+        return 0.0;
     }
-    List *rpnExpr = get_rpn(tokenList, ptrError);
-    val = calculate_rpn(rpnExpr, ptrError);
-    destroyList(tokenList);
-    destroyList(rpnExpr);
+    List *rpnExpr = get_rpn(tokenList);
+    double val = calculate_rpn(rpnExpr);
+    destroy_list(rpnExpr);
+    destroy_list(tokenList);
     return val;
 }

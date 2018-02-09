@@ -2,18 +2,19 @@
 #include "expr_string.h"
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #define BUF_SIZE 2048
 static char buf[BUF_SIZE];
 
-char *readString(FILE *pFile) {
+char *read_string(FILE *pFile) {
     if (fgets(buf, BUF_SIZE, pFile) == NULL) {
         return NULL;
     }
     return strdup(buf);
 }
 
-char *removeSpaces(char *str) {
+char *remove_spaces(char *str) {
     //removes all spaces in the string;
     if (str == NULL) {
         return NULL;
@@ -30,19 +31,20 @@ char *removeSpaces(char *str) {
     return str_glued;
 }
 
-int isExpr(const char *expr) {
-    //checks whether the expression contains invalid characters or not
-    //(which are not in the charset below)
-    static char charset[] = "0123456789+-*/().";
+int has_letters(const char *expr) {
     while (*expr) {
-        if (strchr(charset, *expr++) == NULL) {
-            return 0;
+        if (isdigit(*expr++)) {
+            return 1;
         }
     }
-    return 1;
+    return 0;
 }
 
-void destroyString(char *str) {
+int is_empty(const char *expr) {
+    return expr == NULL || *expr == '\0';
+}
+
+void destroy_string(char *str) {
     if (str != NULL) {
         free(str);
     }

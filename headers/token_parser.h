@@ -22,8 +22,8 @@ typedef struct Token {
     TokenType tokenType;
 } Token;
 
-Token makeToken(TokenType tokenType, double num);
-List *makeTokenList(char *expr);
-void printTokenList(List *tokenList);
+Token make_token(TokenType tokenType, double num);
+List *make_token_list(char *expr);
+void print_token_list(List *tokenList);
 
 #endif // TOKEN_PARSER_H
