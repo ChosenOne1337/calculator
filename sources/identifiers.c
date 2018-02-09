@@ -16,7 +16,6 @@ int is_var_declaration(char *expr) {
     //identificator must start from a letter
     //and can contain only letters and digits
     if (strchr(expr, '=') == NULL) {
-        //expression doesn't contain '='
         return 0;
     }
     if (!isalpha(*expr)) {
@@ -28,12 +27,14 @@ int is_var_declaration(char *expr) {
     while (*token) {
         if (!isalnum(*token++)) {
             set_error(InvalidIdentifierError);
+            destroy_string(expr_cpy);
             return 1;
         }
     }
     token = strtok(NULL, "");
     if (token == NULL) {
         set_error(InvalidValueError);
+        destroy_string(expr_cpy);
         return 1;
     }
     strtod(token, &token);
