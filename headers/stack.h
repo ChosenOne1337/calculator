@@ -6,7 +6,7 @@
         /// List ///
 
 typedef struct List {
-    Token data;
+    Token token;
     struct List *pNext;
 } List;
 

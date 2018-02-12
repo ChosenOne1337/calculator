@@ -16,15 +16,15 @@ void set_error(ErrorType errorType) {
     ERROR.msg = errMsg[errorType];
 }
 
-int is_error() {
+int is_error(void) {
     return ERROR.isError;
 }
 
-const char *get_error_msg() {
+const char *get_error_msg(void) {
     return ERROR.msg;
 }
 
-void reset_error() {
+void reset_error(void) {
     ERROR.isError = 0;
     ERROR.msg = NULL;
 }

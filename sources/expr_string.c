@@ -14,10 +14,10 @@ char *read_string(FILE *pFile) {
     return strdup(buf);
 }
 
-char *remove_spaces(char *str) {
+void remove_spaces(char *str) {
     //removes all spaces in the string;
     if (str == NULL) {
-        return NULL;
+        return;
     }
     static char charset[] = " \t\n";
     int len = 0;
@@ -28,7 +28,6 @@ char *remove_spaces(char *str) {
         }
     }
     str_glued[len] = '\0';
-    return str_glued;
 }
 
 int has_letters(const char *expr) {

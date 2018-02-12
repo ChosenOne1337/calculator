@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 char *read_string(FILE *pFile);
-char *remove_spaces(char *str);
+void remove_spaces(char *str);
 void destroy_string(char *str);
 int has_letters(const char *expr);
 int is_empty(const char *expr);

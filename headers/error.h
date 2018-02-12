@@ -8,7 +8,7 @@ typedef enum ErrorType {
     UndeclaredVariableError,
     InvalidIdentifierError,
     InvalidValueError,
-    MallocError,
+    EmptyExprError,
     TotalErrors
 } ErrorType;
 
@@ -17,9 +17,9 @@ typedef struct Error {
     const char *msg;
 } Error;
 
-int is_error();
-const char *get_error_msg();
+int is_error(void);
+const char *get_error_msg(void);
 void set_error(ErrorType errorType);
-void reset_error();
+void reset_error(void);
 
 #endif // ERROR_H

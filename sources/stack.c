@@ -20,7 +20,7 @@ List *prepend(List *pHead, Token data) {
     if (pNew == NULL) {
         return pHead;
     }
-    pNew->data = data;
+    pNew->token = data;
     pNew->pNext = pHead;
     return pNew;
 }
@@ -32,7 +32,7 @@ List *append(List *pHead, Token data) {
     if (pNew == NULL) {
         return pHead;
     }
-    pNew->data = data;
+    pNew->token = data;
     pNew->pNext = NULL;
     if (pHead != NULL) {
         tail(pHead)->pNext = pNew;
@@ -49,7 +49,7 @@ List *insert_after(List *pPrev, Token data) {
     if (pNew == NULL) {
         return pPrev;
     }
-    pNew->data = data;
+    pNew->token = data;
     if (pPrev != NULL) {
         pNew->pNext = pPrev->pNext;
         pPrev->pNext = pNew;
@@ -124,12 +124,12 @@ void push(Stack *pStack, Token data) {
 }
 
 Token pop(Stack *pStack) {
-    Token data = pStack->pTop->data;
+    Token data = pStack->pTop->token;
     pStack->pTop = erase_head(pStack->pTop);
     --pStack->size;
     return data;
 }
 
 Token top(Stack *pStack) {
-    return pStack->pTop->data;
+    return pStack->pTop->token;
 }

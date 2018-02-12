@@ -19,10 +19,10 @@ static const int operPrty[] = {-1, -1, 3, 3, 4, 4, 1, 2};
 
 typedef struct Token {
     double val;
-    TokenType tokenType;
+    TokenType type;
 } Token;
 
-Token make_token(TokenType tokenType, double num);
+Token make_token(TokenType type, double num);
 List *make_token_list(char *expr);
 void print_token_list(List *tokenList);
 
